@@ -16,7 +16,7 @@ export function createBubble(size: BubbleSize, x: number, direction: 1 | -1 = 1)
   const { radius, initialVy, vx } = BUBBLE_SIZES[size]
   return {
     x,
-    y: FLOOR_Y - radius,
+    y: Math.round((FLOOR_Y - radius) / 3),
     radius,
     vx: vx * direction,
     vy: initialVy,
