@@ -25,8 +25,24 @@ export function createBubble(size: BubbleSize, x: number, direction: 1 | -1 = 1)
 }
 
 export function createSplitBubbles(hit: Bubble): Bubble[] {
-  if (hit.size === 'large')  return [createBubble('medium', hit.x, -1), createBubble('medium', hit.x, 1)]
-  if (hit.size === 'medium') return [createBubble('small',  hit.x, -1), createBubble('small',  hit.x, 1)]
+  if (hit.size === 'large') {
+    const cr = BUBBLE_SIZES.medium.radius
+    const spawnY = Math.max(hit.y - hit.radius - cr, cr)
+    const m1 = createBubble('medium', hit.x, -1)
+    const m2 = createBubble('medium', hit.x,  1)
+    m1.y = spawnY
+    m2.y = spawnY
+    return [m1, m2]
+  }
+  if (hit.size === 'medium') {
+    const cr = BUBBLE_SIZES.small.radius
+    const spawnY = Math.max(hit.y - hit.radius - cr, cr)
+    const s1 = createBubble('small', hit.x, -1)
+    const s2 = createBubble('small', hit.x,  1)
+    s1.y = spawnY
+    s2.y = spawnY
+    return [s1, s2]
+  }
   return []
 }
 

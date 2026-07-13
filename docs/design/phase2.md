@@ -196,28 +196,26 @@ AABB-원 충돌:
 - `status.current = lives.current > 0 ? 'dead' : 'gameOver'`
 - `stateTimer.current = 0`
 
-### 분열 후 무적 처리 (버그 수정)
+### 분열 버블 스폰 위치 (버그 수정)
 
-**문제**: 와이어로 버블을 맞추면 분열된 버블이 피격 버블의 x 위치(플레이어 근처)에 생성되어,
-다음 프레임에 즉시 플레이어와 충돌해 목숨이 깎히는 현상 발생.
+**문제**: `createBubble`은 항상 `y = FLOOR_Y - radius`(바닥)에서 버블을 생성한다.
+플레이어도 바닥에 위치하므로 분열 버블이 플레이어와 동일한 y 위치에 겹쳐 생성되어 즉시 피격된다.
+타이머 방식은 분열 직후는 막더라도, 만료 시점에 버블이 다시 바닥으로 내려와 또 즉시 피격되는 문제가 반복된다.
 
-**해결**: 와이어가 버블에 명중해 분열이 발생하는 순간, 플레이어에게 짧은 무적 시간을 부여한다.
+**해결**: 분열 버블을 바닥이 아닌 **피격 버블의 위쪽**에서 생성한다.
+자식 버블의 스폰 y를 `hit.y - hit.radius - childRadius`로 설정하면,
+자식 버블이 플레이어 머리 위에서 시작해 위로 튀어 오르므로 즉시 충돌이 발생하지 않는다.
 
 ```
-와이어 ↔ 버블 충돌 발생 시:
-  splitInvincible.current = SPLIT_INVINCIBLE  // 무적 타이머 설정
+spawnY = hit.y - hit.radius - childRadius   // 피격 버블 바로 위
+spawnY = Math.max(spawnY, childRadius)      // 화면 상단 이탈 방지
 
-피격 판정 조건에 무적 확인 추가:
-  if (splitInvincible.current <= 0 && 버블과 충돌) → 데미지
-
-매 프레임 (playing 상태):
-  if (splitInvincible.current > 0):
-    splitInvincible.current -= dt
+예시 (바닥에 있는 Large 버블 → Medium 분열):
+  hit.y = 558 (= FLOOR_Y - 32)
+  spawnY = 558 - 32 - 20 = 506
+  플레이어 y = 570, 플레이어 상단 = 550
+  버블 하단 = 506 + 20 = 526  →  526 < 550  →  충돌 없음 ✓
 ```
-
-| 상수 | 값 | 설명 |
-|------|----|------|
-| SPLIT_INVINCIBLE | 0.6초 | 분열 직후 무적 유지 시간 |
 
 ---
 

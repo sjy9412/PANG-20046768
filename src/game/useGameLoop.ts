@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useRef } from 'react'
 import {
   CANVAS_HEIGHT, CANVAS_WIDTH, CLEAR_WAIT, COLORS,
-  DEAD_WAIT, FLOOR_HEIGHT, FLOOR_Y, SPLIT_INVINCIBLE, STAGE_TIME,
+  DEAD_WAIT, FLOOR_HEIGHT, FLOOR_Y, STAGE_TIME,
 } from './constants'
 import { Block, createBlock } from './entities/block'
 import { Bubble, createBubble, createSplitBubbles, updateBubble } from './entities/bubble'
@@ -43,11 +43,10 @@ export function useGameLoop(canvasRef: RefObject<HTMLCanvasElement | null>): voi
   const pressedKeys = useRef<Set<string>>(new Set())
   const rafId       = useRef<number>(0)
   const lastTime    = useRef<number>(0)
-  const status          = useRef<GameStatus>('playing')
-  const lives           = useRef<number>(3)
-  const timeLeft        = useRef<number>(STAGE_TIME)
-  const stateTimer      = useRef<number>(0)
-  const splitInvincible = useRef<number>(0)
+  const status     = useRef<GameStatus>('playing')
+  const lives      = useRef<number>(3)
+  const timeLeft   = useRef<number>(STAGE_TIME)
+  const stateTimer = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -60,10 +59,9 @@ export function useGameLoop(canvasRef: RefObject<HTMLCanvasElement | null>): voi
     function resetStage(): void {
       playerRef.current  = createPlayer()
       bubblesRef.current = stageBubbles()
-      wireRef.current        = null
-      timeLeft.current       = STAGE_TIME
-      splitInvincible.current = 0
-      status.current         = 'playing'
+      wireRef.current  = null
+      timeLeft.current = STAGE_TIME
+      status.current   = 'playing'
     }
 
     const onKeyDown = (e: KeyboardEvent): void => {
@@ -112,18 +110,12 @@ export function useGameLoop(canvasRef: RefObject<HTMLCanvasElement | null>): voi
               next.push(b)
             }
           }
-          if (hit) {
-            wireRef.current         = null
-            splitInvincible.current = SPLIT_INVINCIBLE
-          }
+          if (hit) wireRef.current = null
           bubblesRef.current = next
         }
 
-        // 분열 무적 타이머 감소
-        if (splitInvincible.current > 0) splitInvincible.current -= dt
-
-        // 플레이어 ↔ 버블 충돌 (무적 중에는 판정 제외)
-        if (splitInvincible.current <= 0 && bubblesRef.current.some(b => checkPlayerBubble(playerRef.current, b))) {
+        // 플레이어 ↔ 버블 충돌
+        if (bubblesRef.current.some(b => checkPlayerBubble(playerRef.current, b))) {
           lives.current -= 1
           status.current  = lives.current > 0 ? 'dead' : 'gameOver'
           stateTimer.current = 0
