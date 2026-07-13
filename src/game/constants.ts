@@ -15,10 +15,11 @@ export const BUBBLE_SIZES = {
   small:  { radius: 12, initialVy: -320, vx: 250 },
 } as const
 
-export const WIRE_SPEED = 800  // px/s
-export const STAGE_TIME = 60   // seconds
-export const DEAD_WAIT  = 0.8  // seconds
-export const CLEAR_WAIT = 1.5  // seconds
+export const WIRE_SPEED       = 800  // px/s
+export const STAGE_TIME       = 60   // seconds
+export const DEAD_WAIT        = 0.8  // seconds
+export const CLEAR_WAIT       = 1.5  // seconds
+export const SPLIT_INVINCIBLE = 0.6  // seconds — 버블 분열 직후 무적 시간
 
 export const COLORS = {
   background:   '#1a1a2e',
