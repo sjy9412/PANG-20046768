@@ -1,7 +1,13 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH, COLORS } from '../constants'
 import type { GameStatus } from '../types'
 
-export function drawHUD(ctx: CanvasRenderingContext2D, lives: number, timeLeft: number): void {
+export function drawHUD(
+  ctx: CanvasRenderingContext2D,
+  lives: number,
+  timeLeft: number,
+  score: number,
+  stage: number,
+): void {
   ctx.fillStyle = COLORS.hud
   ctx.font = 'bold 18px monospace'
 
@@ -9,13 +15,21 @@ export function drawHUD(ctx: CanvasRenderingContext2D, lives: number, timeLeft: 
   ctx.textAlign = 'left'
   ctx.fillText(`LIVES: ${hearts}`, 16, 30)
 
+  ctx.textAlign = 'center'
+  ctx.fillText(`STAGE ${stage}`, CANVAS_WIDTH / 2, 30)
+
   ctx.textAlign = 'right'
-  ctx.fillText(`TIME: ${Math.ceil(Math.max(0, timeLeft))}`, CANVAS_WIDTH - 16, 30)
+  ctx.fillText(`${Math.ceil(Math.max(0, timeLeft))}s`, CANVAS_WIDTH - 120, 30)
+  ctx.fillText(`${score}pt`, CANVAS_WIDTH - 16, 30)
 
   ctx.textAlign = 'left'
 }
 
-export function drawOverlay(ctx: CanvasRenderingContext2D, status: GameStatus): void {
+export function drawOverlay(
+  ctx: CanvasRenderingContext2D,
+  status: GameStatus,
+  score: number,
+): void {
   if (status === 'playing') return
 
   ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
@@ -32,9 +46,20 @@ export function drawOverlay(ctx: CanvasRenderingContext2D, status: GameStatus): 
     ctx.fillText('CLEAR!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
   } else if (status === 'gameOver') {
     ctx.font = 'bold 48px monospace'
-    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20)
-    ctx.font = 'bold 20px monospace'
-    ctx.fillText('R키로 재시작', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 30)
+    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 30)
+    ctx.font = 'bold 24px monospace'
+    ctx.fillText(`SCORE: ${score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20)
+    ctx.font = 'bold 18px monospace'
+    ctx.fillText('R키로 재시작', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 60)
+  } else if (status === 'missionClear') {
+    ctx.font = 'bold 48px monospace'
+    ctx.fillStyle = '#ffd43b'
+    ctx.fillText('MISSION CLEAR!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40)
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 24px monospace'
+    ctx.fillText(`FINAL SCORE: ${score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20)
+    ctx.font = 'bold 18px monospace'
+    ctx.fillText('R키로 처음부터', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 60)
   }
 
   ctx.textAlign = 'left'
