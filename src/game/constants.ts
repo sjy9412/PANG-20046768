@@ -15,6 +15,11 @@ export const BUBBLE_SIZES = {
   small:  { radius: 12, initialVy: -320, vx: 250 },
 } as const
 
+export const WIRE_SPEED = 800  // px/s
+export const STAGE_TIME = 60   // seconds
+export const DEAD_WAIT  = 0.8  // seconds
+export const CLEAR_WAIT = 1.5  // seconds
+
 export const COLORS = {
   background:   '#1a1a2e',
   floor:        '#e0e0e0',
@@ -22,4 +27,7 @@ export const COLORS = {
   bubbleLarge:  '#ff6b6b',
   bubbleMedium: '#ffa94d',
   bubbleSmall:  '#ffd43b',
+  wire:         '#ffffff',
+  block:        '#4a9eff',
+  hud:          '#ffffff',
 } as const

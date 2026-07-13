@@ -1,4 +1,5 @@
 import { BUBBLE_SIZES, CANVAS_WIDTH, FLOOR_Y, GRAVITY } from '../constants'
+import type { Block } from './block'
 
 export type BubbleSize = 'large' | 'medium' | 'small'
 
@@ -23,10 +24,16 @@ export function createBubble(size: BubbleSize, x: number, direction: 1 | -1 = 1)
   }
 }
 
-export function updateBubble(bubble: Bubble, dt: number): void {
+export function createSplitBubbles(hit: Bubble): Bubble[] {
+  if (hit.size === 'large')  return [createBubble('medium', hit.x, -1), createBubble('medium', hit.x, 1)]
+  if (hit.size === 'medium') return [createBubble('small',  hit.x, -1), createBubble('small',  hit.x, 1)]
+  return []
+}
+
+export function updateBubble(bubble: Bubble, dt: number, blocks: Block[]): void {
   bubble.vy += GRAVITY * dt
-  bubble.x += bubble.vx * dt
-  bubble.y += bubble.vy * dt
+  bubble.x  += bubble.vx * dt
+  bubble.y  += bubble.vy * dt
 
   // 벽 반사
   if (bubble.x - bubble.radius < 0) {
@@ -39,7 +46,21 @@ export function updateBubble(bubble: Bubble, dt: number): void {
 
   // 바닥 반사: 속도를 초기값으로 리셋 (에너지 감쇠 없음)
   if (bubble.y + bubble.radius > FLOOR_Y) {
-    bubble.y = FLOOR_Y - bubble.radius
+    bubble.y  = FLOOR_Y - bubble.radius
     bubble.vy = -Math.abs(BUBBLE_SIZES[bubble.size].initialVy)
+  }
+
+  // Block 윗면 반사
+  for (const block of blocks) {
+    if (
+      bubble.vy > 0 &&
+      bubble.y + bubble.radius >= block.y &&
+      bubble.y - bubble.radius <= block.y &&
+      bubble.x + bubble.radius >  block.x &&
+      bubble.x - bubble.radius <  block.x + block.width
+    ) {
+      bubble.y  = block.y - bubble.radius
+      bubble.vy = -Math.abs(BUBBLE_SIZES[bubble.size].initialVy)
+    }
   }
 }
