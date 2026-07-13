@@ -13,13 +13,13 @@ export type Bubble = {
 }
 
 export function createBubble(size: BubbleSize, x: number, direction: 1 | -1 = 1): Bubble {
-  const { radius, initialVy, vx } = BUBBLE_SIZES[size]
+  const { radius, vx } = BUBBLE_SIZES[size]
   return {
     x,
     y: Math.round((FLOOR_Y - radius) / 3),
     radius,
     vx: vx * direction,
-    vy: initialVy,
+    vy: 0,
     size,
   }
 }
